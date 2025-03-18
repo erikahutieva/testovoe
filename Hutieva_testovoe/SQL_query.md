@@ -1,16 +1,16 @@
-Задание 1. 
+#Задание 1. 
 
 Показать категорию, по которой было введено наибольшее число кодов за все время
 
-SELECT category
+<big>SELECT category
 FROM table_name
 GROUP BY category
 ORDER BY COUNT(*) DESC
-LIMIT 1;
+LIMIT 1;<big>
 
 ![alt text](images/image.png)
 
-Задание 2. 
+#Задание 2. 
 
 Добавить индикатор, который будет выделять следующие значения:
 •  Если otp для категории мобильная идентификация (mobile), то = 1
@@ -18,21 +18,21 @@ LIMIT 1;
 Все остальные заявки не должны попасть в результат выполнения запроса.
 
 
-SELECT client_id, session_id, datetime, category,
+<big>SELECT client_id, session_id, datetime, category,
     (CASE
         WHEN category = 'mobile-otp' THEN 1
         WHEN category = 'otp-login' THEN 2
     END ) AS indicator
 FROM table_name
-WHERE category IN ('mobile-otp', 'otp-login');
+WHERE category IN ('mobile-otp', 'otp-login');<big>
 
 ![alt text](images/image-1.png)
 
-Задание 3. 
+#Задание 3. 
 
 Посчитать метрику Month-of-Month (прирост текущего месяца к предыдущему) по уникальным клиентам с кодами otp-login.
 
-SELECT year, month,client_count, client_count - LAG(client_count) OVER (ORDER BY year, month) AS month_of_month
+<big>SELECT year, month,client_count, client_count - LAG(client_count) OVER (ORDER BY year, month) AS month_of_month
 FROM (
   SELECT
     EXTRACT(YEAR FROM TO_DATE("datetime", 'MM/DD/YYYY'))::int AS year,
@@ -42,11 +42,11 @@ FROM (
   WHERE category = 'otp-login'
   GROUP BY 1, 2
 )
-ORDER BY year, month;
+ORDER BY year, month;<big>
 
 ![alt text](images/image-2.png)
 
-Задание 4.  
+#Задание 4.  
 
 Одним запросом сформируйте:
 •  Количество введённых ОТП кодов в разрезе категории кода ОТП
@@ -54,7 +54,7 @@ ORDER BY year, month;
 •  Количество введённых ОТП с накопительным итогом
 •  Общее количество введённых ОТП кодов
 
-WITH group_category AS (
+<big>WITH group_category AS (
     SELECT category, COUNT(*) as category_count
     FROM table_name
     GROUP BY category
@@ -65,6 +65,6 @@ SELECT category,category_count,
     SUM(category_count) OVER (ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS count,
     SUM(category_count) OVER () AS full_count
 FROM group_category
-ORDER BY category_count DESC;
+ORDER BY category_count DESC;<big>
 
 ![alt text](images/image-3.png)
