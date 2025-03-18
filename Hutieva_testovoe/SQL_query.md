@@ -32,17 +32,36 @@ WHERE category IN ('mobile-otp', 'otp-login');<big>
 
 Посчитать метрику Month-of-Month (прирост текущего месяца к предыдущему) по уникальным клиентам с кодами otp-login.
 
-<big>SELECT year, month,client_count, client_count - LAG(client_count) OVER (ORDER BY year, month) AS month_of_month
+Добавляю 2021 год, чтобы проверить с 2020
+
+<big>INSERT INTO table_name (client_id, session_id, datetime, category)
+VALUES (
+  2397729327,
+  'b7fcc1f6-686b-41a461',
+  TO_DATE('2021-03-14', 'YYYY-MM-DD'),
+  'otp-login'
+);<big>
+
+Преобразовываю столбец datatime в тип DATA
+ALTER TABLE table_name
+ALTER COLUMN datetime TYPE DATE
+USING TO_DATE(datetime, 'DD/MM/YYYY');
+
+
+Считаю:
+<big>
+SELECT year, month,client_count, client_count - LAG(client_count) OVER (PARTITION BY year ORDER BY month) AS month_of_month
 FROM (
   SELECT
-    EXTRACT(YEAR FROM TO_DATE("datetime", 'MM/DD/YYYY'))::int AS year,
-    EXTRACT(MONTH FROM TO_DATE("datetime", 'MM/DD/YYYY'))::int AS month,
+    EXTRACT(YEAR FROM "datetime")::int AS year,
+    EXTRACT(MONTH FROM "datetime")::int AS month,
     COUNT(DISTINCT client_id) AS client_count
   FROM table_name
   WHERE category = 'otp-login'
   GROUP BY 1, 2
 )
-ORDER BY year, month;<big>
+ORDER BY year, month ;
+<big>
 
 ![alt text](images/image-2.png)
 
